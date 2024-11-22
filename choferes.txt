@@ -1,0 +1,10 @@
+Carlos,Sánchez,true,null
+María,González,false,null
+Luis,Pérez,true,1
+Ana,López,true,2
+Jorge,Martínez,false,null
+Claudia,Rodríguez,true,3
+Pedro,Hernández,false,null
+Laura,Ramírez,true,4
+Sofía,Torres,true,5
+Fernando,Castillo,false,null
