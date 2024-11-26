@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
 
-namespace TMT_mantencion_chofer;
+namespace TMT_mantencion_chofer.Models;
 
 public partial class TransporteContext : DbContext
 {
@@ -17,9 +18,9 @@ public partial class TransporteContext : DbContext
 
     public virtual DbSet<Bus> Buses { get; set; }
 
-    public virtual DbSet<Chofer> Chofers { get; set; }
+    public virtual DbSet<Chofer> Choferes { get; set; }
 
-    public virtual DbSet<Kilometraje> Kilometrajes { get; set; }
+    public virtual DbSet<Tramo> Tramos { get; set; }
 
     public virtual DbSet<Viaje> Viajes { get; set; }
 
@@ -31,8 +32,14 @@ public partial class TransporteContext : DbContext
         // Get the connection string from environment variables
         var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("DB_CONNECTION_STRING environment variable is not set.");
+        }
+
         optionsBuilder.UseMySQL(connectionString);
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Bus>(entity =>
@@ -48,6 +55,7 @@ public partial class TransporteContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("codigo");
             entity.Property(e => e.Disponibilidad).HasColumnName("disponibilidad");
+            entity.Property(e => e.Kilometros).HasColumnName("kilometros");
             entity.Property(e => e.Patente)
                 .HasMaxLength(50)
                 .HasColumnName("patente");
@@ -59,38 +67,28 @@ public partial class TransporteContext : DbContext
 
             entity.ToTable("chofer");
 
-            entity.HasIndex(e => e.IdBus, "id_bus");
-
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Apellido)
                 .HasMaxLength(50)
                 .HasColumnName("apellido");
             entity.Property(e => e.Disponibilidad).HasColumnName("disponibilidad");
-            entity.Property(e => e.IdBus).HasColumnName("id_bus");
+            entity.Property(e => e.Kilometros).HasColumnName("kilometros");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .HasColumnName("nombre");
-
-            entity.HasOne(d => d.IdBusNavigation).WithMany(p => p.Chofers)
-                .HasForeignKey(d => d.IdBus)
-                .HasConstraintName("chofer_ibfk_1");
         });
 
-        modelBuilder.Entity<Kilometraje>(entity =>
+        modelBuilder.Entity<Tramo>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("kilometraje");
-
-            entity.HasIndex(e => e.IdViaje, "id_viaje");
+            entity.ToTable("tramo");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.DistanciaRecorrida).HasColumnName("distancia_recorrida");
-            entity.Property(e => e.IdViaje).HasColumnName("id_viaje");
-
-            entity.HasOne(d => d.IdViajeNavigation).WithMany(p => p.Kilometrajes)
-                .HasForeignKey(d => d.IdViaje)
-                .HasConstraintName("kilometraje_ibfk_1");
+            entity.Property(e => e.Distancia).HasColumnName("distancia");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
         });
 
         modelBuilder.Entity<Viaje>(entity =>
@@ -103,33 +101,30 @@ public partial class TransporteContext : DbContext
 
             entity.HasIndex(e => e.IdChofer, "id_chofer");
 
+            entity.HasIndex(e => e.IdTramo, "id_tramo");
+
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CiudadDestino)
-                .HasMaxLength(50)
-                .HasColumnName("ciudad_destino");
-            entity.Property(e => e.CiudadOrigen)
-                .HasMaxLength(50)
-                .HasColumnName("ciudad_origen");
-            entity.Property(e => e.Distancia).HasColumnName("distancia");
-            entity.Property(e => e.Estado)
-                .HasMaxLength(20)
-                .HasColumnName("estado");
-            entity.Property(e => e.FechaInicio)
+            entity.Property(e => e.Fecha)
                 .HasColumnType("date")
-                .HasColumnName("fecha_inicio");
-            entity.Property(e => e.FechaTermino)
-                .HasColumnType("date")
-                .HasColumnName("fecha_termino");
+                .HasColumnName("fecha");
             entity.Property(e => e.IdBus).HasColumnName("id_bus");
             entity.Property(e => e.IdChofer).HasColumnName("id_chofer");
+            entity.Property(e => e.IdTramo).HasColumnName("id_tramo");
 
             entity.HasOne(d => d.IdBusNavigation).WithMany(p => p.Viajes)
                 .HasForeignKey(d => d.IdBus)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("viaje_ibfk_1");
 
             entity.HasOne(d => d.IdChoferNavigation).WithMany(p => p.Viajes)
                 .HasForeignKey(d => d.IdChofer)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("viaje_ibfk_2");
+
+            entity.HasOne(d => d.IdTramoNavigation).WithMany(p => p.Viajes)
+                .HasForeignKey(d => d.IdTramo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("viaje_ibfk_3");
         });
 
         OnModelCreatingPartial(modelBuilder);
