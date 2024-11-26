@@ -16,10 +16,27 @@ public class MantenimientoChofer
 
     public void AgregarDesdeArchivo(string rutaArchivo)
     {
+        int contador = 0;
         var choferes = File.ReadAllLines(rutaArchivo);
         foreach (var chofer in choferes)
         {
             var datosChofer = chofer.Split(",");
+            // Veroficar si el chofer ya existe
+            var choferExistente = context.Choferes.FirstOrDefault(x => x.Nombre == datosChofer[0] && x.Apellido == datosChofer[1]);
+            if (choferExistente != null)
+            {
+                Console.WriteLine($"El chofer {datosChofer[0]} {datosChofer[1]} ya existe");
+                continue;
+            } else {
+                Console.WriteLine($"Agregando chofer {datosChofer[0]} {datosChofer[1]}");
+            }
+            
+            if (datosChofer.Length != 4)
+            {
+                Console.WriteLine($"Error al leer los datos del chofer {datosChofer[0]} {datosChofer[1]}");
+                continue;
+            }
+
             var nuevoChofer = new Chofer
             {
                 Nombre = datosChofer[0],
@@ -28,9 +45,19 @@ public class MantenimientoChofer
                 Kilometros = int.Parse(datosChofer[3])
             };
             context.Choferes.Add(nuevoChofer);
+            contador++;
         }
-
         context.SaveChanges();
+        if(contador == 0)
+        {
+            Console.WriteLine("No se agregaron choferes");
+            Console.WriteLine("Presione una tecla para continuar...");
+            Console.ReadKey();
+            return;
+        }
+        Console.WriteLine($"Se agregaron {contador} choferes correctamente");
+        Console.WriteLine("Presione una tecla para continuar...");
+        Console.ReadKey();
     }
 
     public void ListarChoferes()
@@ -51,7 +78,7 @@ public class MantenimientoChofer
         var chofer = context.Choferes.FirstOrDefault(x => x.Id == id);
         if (chofer != null)
         {
-            Console.WriteLine("Esta seguro que desea eliminar el chofer? (s/n)");
+            Console.WriteLine($"Esta seguro que desea eliminar el chofer {chofer.Nombre} {chofer.Apellido}? (s/n)");
             var respuesta = Console.ReadLine();
             if (respuesta != null && respuesta.ToLower() == "s")
             {
@@ -64,7 +91,7 @@ public class MantenimientoChofer
                 }
                 catch(Exception ex){
                     Console.WriteLine("Error al eliminar el chofer, verifique que no tenga viajes asociados");
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Data);
                     Console.WriteLine("Presione una tecla para continuar...");
                     Console.ReadKey();
                 }
