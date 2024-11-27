@@ -21,16 +21,17 @@ public class MantenimientoChofer
         foreach (var chofer in choferes)
         {
             var datosChofer = chofer.Split(",");
-            // Veroficar si el chofer ya existe
             var choferExistente = context.Choferes.FirstOrDefault(x => x.Nombre == datosChofer[0] && x.Apellido == datosChofer[1]);
             if (choferExistente != null)
             {
                 Console.WriteLine($"El chofer {datosChofer[0]} {datosChofer[1]} ya existe");
                 continue;
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"Agregando chofer {datosChofer[0]} {datosChofer[1]}");
             }
-            
+
             if (datosChofer.Length != 4)
             {
                 Console.WriteLine($"Error al leer los datos del chofer {datosChofer[0]} {datosChofer[1]}");
@@ -48,7 +49,7 @@ public class MantenimientoChofer
             contador++;
         }
         context.SaveChanges();
-        if(contador == 0)
+        if (contador == 0)
         {
             Console.WriteLine("No se agregaron choferes");
             Console.WriteLine("Presione una tecla para continuar...");
@@ -82,14 +83,16 @@ public class MantenimientoChofer
             var respuesta = Console.ReadLine();
             if (respuesta != null && respuesta.ToLower() == "s")
             {
-                try{
+                try
+                {
                     context.Choferes.Remove(chofer);
                     context.SaveChanges();
                     Console.WriteLine("Chofer eliminado correctamente");
                     Console.WriteLine("Presione una tecla para continuar...");
                     Console.ReadKey();
                 }
-                catch(Exception ex){
+                catch (Exception ex)
+                {
                     Console.WriteLine("Error al eliminar el chofer, verifique que no tenga viajes asociados");
                     Console.WriteLine(ex.Data);
                     Console.WriteLine("Presione una tecla para continuar...");

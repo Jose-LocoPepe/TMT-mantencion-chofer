@@ -20,7 +20,14 @@ while (true)
             var rutaArchivo = Console.ReadLine();
             try
             {
-                mantenimientoChofer.AgregarDesdeArchivo(rutaArchivo);
+                if (!File.Exists(rutaArchivo))
+                {
+                    Console.WriteLine("El archivo no existe");
+                }
+                else
+                {
+                    mantenimientoChofer.AgregarDesdeArchivo(rutaArchivo);
+                }
             }
             catch (Exception ex)
             {
