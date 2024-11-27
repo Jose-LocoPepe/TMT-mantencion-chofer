@@ -5,7 +5,7 @@
   <h3 align="center">Sistema de mantenimiento de choferes</h3>
 </div>
 
-## Table of Contents
+## Tabla de Contenidos
 - [Introducción](#introducción)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Pasos de Ejecución](#pasos-de-ejecución)
@@ -24,7 +24,7 @@ Esta aplicación es un proyecto para el ramo de "Proyecto Desarrollo e Integraci
 Está diseñado para darle mantencion a los busesy choferes de la base de datos. 
 
 ## Tecnologías Utilizadas 
-- [ASP.NET](https://dotnet.microsoft.com/en-us/)
+- [.NET](https://dotnet.microsoft.com/en-us/)
 - [MySQL](https://www.mysql.com)
 - [MySQL Workbench](https://dev.mysql.com/downloads/installer/)
 
@@ -78,7 +78,7 @@ Ahora levantamos la aplicación en un terminal con el comando:
 dotnet run
 ```
 
-Con ello la aplicación web se iniciará, y puedes acceder a ella mediante tu navegador web. (Por ejemplo: http://localhost)
+
 
 
 ## Versionado 
